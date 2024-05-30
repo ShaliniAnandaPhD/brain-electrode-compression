@@ -11,9 +11,13 @@ source venv/bin/activate
 pip install --upgrade pip
 pip install -r requirements.txt
 
-# Ensure model.py is available in the current directory
+# Ensure model.py is available by copying it from the GitHub repository
+MODEL_URL="https://raw.githubusercontent.com/ShaliniAnandaPhD/brain-electrode-compression/main/model.py"
+curl -o model.py $MODEL_URL
+
+# Check if model.py was downloaded successfully
 if [ ! -f model.py ]; then
-  echo "model.py not found! Please ensure model.py is in the current directory."
+  echo "Failed to download model.py! Please ensure the URL is correct and you have internet access."
   exit 1
 fi
 
