@@ -1,0 +1,4 @@
+numpy
+soundfile
+torch
+scipy
