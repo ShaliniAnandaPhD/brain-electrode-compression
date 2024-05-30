@@ -71,9 +71,3 @@ Contributions to this project are welcome. If you have any ideas for improvement
 ## License
 
 This project is licensed under the [MIT License](LICENSE).
-
-## Contact
-
-If you have any questions or would like to collaborate on this project, please email compression@brain.com.
-
--
