@@ -1,6 +1,7 @@
 import numpy as np
 import torch
 import soundfile as sf
+import bz2
 from model import VQVAE
 
 # Define decompress_audio and entropy_decode functions
@@ -21,6 +22,12 @@ def entropy_decode(encoded_indices):
     decompressed_indices = bz2.decompress(encoded_indices)
     indices = np.frombuffer(decompressed_indices, dtype=np.int64)
     return indices
+
+data_dir = 'data'
+segment_size = 16000
+latent_dim = 2
+num_embeddings = 128
+embedding_dim = latent_dim
 
 # Load the trained model
 model = VQVAE(segment_size, latent_dim, num_embeddings, embedding_dim)
