@@ -45,7 +45,7 @@ To use the compression algorithm, follow these steps:
 
 1. Clone the repository:
    ```
-   git clone https://github.com/your-username/brain-electrode-compression.git
+   git clone https://github.com/ShaliniAnandaPhD/brain-electrode-compression.git
    ```
 
 2. Install the required dependencies:
@@ -76,6 +76,4 @@ This project is licensed under the [MIT License](LICENSE).
 
 If you have any questions or would like to collaborate on this project, please email compression@brain.com.
 
----
-
-Feel free to customize and expand upon this README file based on your specific implementation details and additional information you want to include.
+-
