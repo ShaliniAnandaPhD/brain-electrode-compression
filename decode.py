@@ -1,31 +1,46 @@
-import os
 import numpy as np
-import soundfile as sf
 import torch
-from model import VQVAE, entropy_decode, decompress_audio
+import soundfile as sf
+from model import VQVAE
 
-def main(input_file, output_file):
-    # Load the trained model
-    model = VQVAE(segment_size=16000, latent_dim=2, num_embeddings=128, embedding_dim=2)
-    model.load_state_dict(torch.load('vqvae_audio_compression.pth'))
+# Define decompress_audio and entropy_decode functions
+def decompress_audio(model, compressed_audio, segment_size):
+    decompressed_audio = []
     model.eval()
+    with torch.no_grad():
+        for indices in compressed_audio:
+            indices = entropy_decode(indices)
+            indices_tensor = torch.tensor(indices).unsqueeze(0)
+            z_q = model.embedding(indices_tensor)
+            recon_segment = model.decode(z_q)
+            decompressed_audio.append(recon_segment.squeeze().numpy())
+    decompressed_audio = np.concatenate(decompressed_audio)
+    return decompressed_audio[:segment_size * len(compressed_audio)]  # Truncate to original length
 
-    # Read the encoded data from the input file
+def entropy_decode(encoded_indices):
+    decompressed_indices = bz2.decompress(encoded_indices)
+    indices = np.frombuffer(decompressed_indices, dtype=np.int64)
+    return indices
+
+# Load the trained model
+model = VQVAE(segment_size, latent_dim, num_embeddings, embedding_dim)
+model.load_state_dict(torch.load('vqvae_audio_compression.pth'))
+model.eval()
+
+# Decode function
+def decode(input_file, output_file):
     with open(input_file, 'rb') as f:
         entropy_encoded_audio = []
         while chunk := f.read():
             entropy_encoded_audio.append(chunk)
-
-    # Decode the audio data
-    decompressed_audio = decompress_audio(model, entropy_encoded_audio, segment_size=16000)
-
-    # Write the decoded audio to the output file
-    sf.write(output_file, decompressed_audio, samplerate=16000)
+    
+    decompressed_audio = decompress_audio(model, entropy_encoded_audio, segment_size)
+    
+    sf.write(output_file, decompressed_audio, 16000)
 
 if __name__ == "__main__":
-    import argparse
-    parser = argparse.ArgumentParser(description='Decode audio file using VQ-VAE')
-    parser.add_argument('input_file', help='Path to the input encoded file')
-    parser.add_argument('output_file', help='Path to the output decoded audio file')
-    args = parser.parse_args()
-    main(args.input_file, args.output_file)
+    import sys
+    input_file = sys.argv[1]
+    output_file = sys.argv[2]
+    decode(input_file, output_file)
+
