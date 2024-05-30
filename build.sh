@@ -7,6 +7,9 @@ source venv/bin/activate
 # Install Python dependencies
 pip install -r requirements.txt
 
+# Copy the model.py file to the current directory
+cp /path/to/model.py .
+
 # Train the VQ-VAE model
 python train.py
 
