@@ -24,7 +24,30 @@ fi
 # Train the VQ-VAE model
 python train.py
 
-# Make the encode and decode scripts executable
-chmod +x encode.py decode.py
+# Create the encode executable
+echo "#!/usr/bin/env python" > encode
+cat <<EOF >> encode
+import sys
+from encode import main as encode_main
+
+if __name__ == "__main__":
+    input_file = sys.argv[1]
+    output_file = sys.argv[2]
+    encode_main(input_file, output_file)
+EOF
+chmod +x encode
+
+# Create the decode executable
+echo "#!/usr/bin/env python" > decode
+cat <<EOF >> decode
+import sys
+from decode import main as decode_main
+
+if __name__ == "__main__":
+    input_file = sys.argv[1]
+    output_file = sys.argv[2]
+    decode_main(input_file, output_file)
+EOF
+chmod +x decode
 
 echo "Build completed successfully."
