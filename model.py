@@ -1,32 +1,8 @@
-import numpy as np
-import soundfile as sf
+# model.py
 import torch
 import torch.nn as nn
 from torch.utils.data import Dataset
-import bz2
-from scipy.stats import entropy, gaussian_kde
 
-# Segment the audio file into smaller segments
-def segment_audio(file_path, segment_size):
-    audio_data, samplerate = sf.read(file_path)
-    segments = [audio_data[i:i + segment_size] for i in range(0, len(audio_data), segment_size)]
-    for i in range(len(segments)):
-        if len(segments[i]) < segment_size:
-            segments[i] = np.pad(segments[i], (0, segment_size - len(segments[i])), 'constant')
-    return segments, samplerate
-
-# Dataset class for loading audio segments
-class AudioDataset(Dataset):
-    def __init__(self, segments):
-        self.segments = segments
-    
-    def __len__(self):
-        return len(self.segments)
-    
-    def __getitem__(self, idx):
-        return self.segments[idx]
-
-# Define the VQ-VAE architecture
 class VQVAE(nn.Module):
     def __init__(self, segment_size, latent_dim, num_embeddings, embedding_dim):
         super(VQVAE, self).__init__()
@@ -68,14 +44,22 @@ class VQVAE(nn.Module):
         z_q = self.codebook(indices)
         return z_q, indices
 
-# Define the loss function
+class AudioDataset(Dataset):
+    def __init__(self, segments):
+        self.segments = segments
+    
+    def __len__(self):
+        return len(self.segments)
+    
+    def __getitem__(self, idx):
+        return self.segments[idx]
+
 def vqvae_loss(x_recon, x, z, z_q, commitment_cost=0.25):
     recon_loss = nn.MSELoss()(x_recon, x)
     vq_loss = nn.MSELoss()(z_q, z.detach())
     commitment_loss = commitment_cost * nn.MSELoss()(z, z_q.detach())
     return recon_loss + vq_loss + commitment_loss
 
-# Train the VQ-VAE model
 def train_vqvae(model, dataloader, epochs, learning_rate=1e-3):
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
     
@@ -93,7 +77,6 @@ def train_vqvae(model, dataloader, epochs, learning_rate=1e-3):
         avg_loss = total_loss / (i + 1)
         print(f"Epoch [{epoch+1}/{epochs}], Loss: {avg_loss:.4f}")
 
-# Compress the audio segments using the trained VQ-VAE model
 def compress_audio(model, segments):
     compressed_audio = []
     model.eval()
@@ -106,7 +89,6 @@ def compress_audio(model, segments):
     compressed_audio = np.array(compressed_audio)
     return compressed_audio
 
-# Decompress the audio using the trained VQ-VAE model
 def decompress_audio(model, compressed_audio, segment_size):
     decompressed_audio = []
     model.eval()
@@ -119,13 +101,11 @@ def decompress_audio(model, compressed_audio, segment_size):
     decompressed_audio = np.concatenate(decompressed_audio)
     return decompressed_audio[:segment_size * len(compressed_audio)]
 
-# Apply entropy coding to the quantized vectors
 def entropy_encode(indices):
     indices_bytes = indices.tobytes()
     compressed_indices = bz2.compress(indices_bytes)
     return compressed_indices
 
-# Decode the entropy encoded vectors
 def entropy_decode(encoded_indices):
     decompressed_indices = bz2.decompress(encoded_indices)
     indices = np.frombuffer(decompressed_indices, dtype=np.int64)
