@@ -1,4 +1,6 @@
 numpy
-soundfile
 torch
+librosa
+soundfile
 scipy
+scikit-image
