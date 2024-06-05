@@ -25,29 +25,49 @@ fi
 python train.py
 
 # Create the encode executable
-echo "#!/usr/bin/env python" > encode
-cat <<EOF >> encode
-import sys
+cat <<EOF > encode.py
+#!/usr/bin/env python
+import argparse
 from encode import main as encode_main
 
 if __name__ == "__main__":
-    input_file = sys.argv[1]
-    output_file = sys.argv[2]
-    encode_main(input_file, output_file)
+    parser = argparse.ArgumentParser(description='Audio Compression Encoder')
+    parser.add_argument('--input_file', type=str, required=True, help='Path to the input audio file')
+    parser.add_argument('--output_file', type=str, required=True, help='Path to save the compressed audio file')
+    args = parser.parse_args()
+    encode_main(args.input_file, args.output_file)
 EOF
-chmod +x encode
+
+# Make the encode script executable
+chmod +x encode.py
+
+# Build the encode executable using PyInstaller
+pyinstaller --onefile encode.py --name encode
 
 # Create the decode executable
-echo "#!/usr/bin/env python" > decode
-cat <<EOF >> decode
-import sys
+cat <<EOF > decode.py
+#!/usr/bin/env python
+import argparse
 from decode import main as decode_main
 
 if __name__ == "__main__":
-    input_file = sys.argv[1]
-    output_file = sys.argv[2]
-    decode_main(input_file, output_file)
+    parser = argparse.ArgumentParser(description='Audio Compression Decoder')
+    parser.add_argument('--input_file', type=str, required=True, help='Path to the compressed audio file')
+    parser.add_argument('--output_file', type=str, required=True, help='Path to save the decompressed audio file')
+    args = parser.parse_args()
+    decode_main(args.input_file, args.output_file)
 EOF
-chmod +x decode
+
+# Make the decode script executable
+chmod +x decode.py
+
+# Build the decode executable using PyInstaller
+pyinstaller --onefile decode.py --name decode
+
+# Clean up the build files
+rm -rf build dist *.spec encode.py decode.py
+
+# Deactivate the virtual environment
+deactivate
 
 echo "Build completed successfully."
