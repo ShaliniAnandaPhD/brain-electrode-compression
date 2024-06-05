@@ -1,6 +1,5 @@
 # Efficient Compression of Neural Recordings Using VQ-CAE: A Vector Quantized Convolutional Autoencoder Approach
 
-# Notion page here: https://www.notion.so/shalini-ananda-phd/Efficient-Compression-of-Neural-Recordings-Using-VQ-CAE-A-Vector-Quantized-Convolutional-Autoencode-ce96b6b42beb422f92cc6359044c8958
 
 ## Introduction
 
