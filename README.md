@@ -1,5 +1,7 @@
 # Efficient Compression of Neural Recordings Using VQ-CAE: A Vector Quantized Convolutional Autoencoder Approach
 
+# Notion page here: https://www.notion.so/shalini-ananda-phd/Efficient-Compression-of-Neural-Recordings-Using-VQ-CAE-A-Vector-Quantized-Convolutional-Autoencode-ce96b6b42beb422f92cc6359044c8958
+
 ## Introduction
 
 Neuroscience and brain-computer interfaces (BCIs) heavily rely on the recording and analysis of neural activity. Capturing neural signals from the motor cortex of non-human primates during tasks, such as playing video games, generates a substantial volume of data. For instance, the N1 implant generates data at a rate of 200 Mbps (from 1024 electrodes at 20 kHz with 10-bit resolution), but it can only transmit 1 Mbps wirelessly. This discrepancy necessitates a compression ratio exceeding 200 times to enable real-time data transmission. Additionally, the compression algorithm must process data within 1 millisecond (ms) and consume less than 10 milliwatts (mW) of power, including radio transmission.
